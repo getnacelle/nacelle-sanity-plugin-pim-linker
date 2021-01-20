@@ -100,7 +100,6 @@ const Interface = ({
 
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
-      <div>Hi Alejandro Roman</div>
       {multiTab && (
         <TabList className="tab">
           {dataTypes.map((type, idx) => (
