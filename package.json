@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker#readme",
   "dependencies": {
+    "isomorphic-unfetch": "^3.1.0",
     "prop-types": "^15.7.2",
     "swr": "^0.4.0"
   },
