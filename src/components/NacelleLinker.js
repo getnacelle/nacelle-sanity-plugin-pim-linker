@@ -28,16 +28,16 @@ import {
 const createPatchFrom = (value) =>
   PatchEvent.from(value === '' ? unset() : set(value))
 
-const handleHailFrequencyData = (res, queryName) =>
-  res && res.data && res.data[queryName] && res.data[queryName].items
+const handleHailFrequencyData = (data, queryName) =>
+  data && data[queryName] && data[queryName].items
 
 const NacelleData = ({ dataType, active }) => {
   const getProducts = useCallback(
-    (res) => handleHailFrequencyData(res, 'getProducts'),
+    (data) => handleHailFrequencyData(data, 'getProducts'),
     []
   )
   const getCollections = useCallback(
-    (res) => handleHailFrequencyData(res, 'getCollections'),
+    (data) => handleHailFrequencyData(data, 'getCollections'),
     []
   )
 
