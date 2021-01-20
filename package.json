@@ -1,6 +1,6 @@
 {
   "name": "@nacelle/sanity-plugin-pim-linker",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.2",
   "description": "Link product & collection data from Nacelle in Sanity Studio",
   "main": "dist/index.js",
   "files": [
@@ -31,8 +31,10 @@
   },
   "homepage": "https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker#readme",
   "dependencies": {
+    "@sanity/ui": "^0.32.6",
     "isomorphic-unfetch": "^3.1.0",
     "prop-types": "^15.7.2",
+    "styled-components": "^5.2.1",
     "swr": "^0.4.0"
   },
   "devDependencies": {
