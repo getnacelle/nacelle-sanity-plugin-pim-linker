@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react'
 
 import useSWR from 'swr'
+import fetch from 'isomorphic-unfetch'
 
 const fetcher = async (query, first, after) => {
-  const res = await window
-    .fetch('https://hailfrequency.com/v2/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-nacelle-space-id': process.env.SANITY_STUDIO_NACELLE_SPACE_ID,
-        'x-nacelle-space-token': process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN,
-      },
-      body: JSON.stringify({
-        query,
-        variables: { first, after },
-      }),
-    })
-    .then((res) => res.json())
+  const res = await fetch('https://hailfrequency.com/v2/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-nacelle-space-id': process.env.SANITY_STUDIO_NACELLE_SPACE_ID,
+      'x-nacelle-space-token': process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN,
+    },
+    body: JSON.stringify({
+      query,
+      variables: { first, after },
+    }),
+  }).then((res) => res.json())
 
   return res && res.data
 }

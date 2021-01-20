@@ -100,6 +100,7 @@ const Interface = ({
 
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
+      <div>Hi Alejandro Roman</div>
       {multiTab && (
         <TabList className="tab">
           {dataTypes.map((type, idx) => (
@@ -125,7 +126,7 @@ Interface.propTypes = {
   interfaceOpen: PropTypes.bool.isRequired,
   activeTab: PropTypes.number,
   setActiveTab: PropTypes.func,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 }
 
 const NacelleLinker = ({ type, onChange }) => {
