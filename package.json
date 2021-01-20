@@ -1,0 +1,79 @@
+{
+  "name": "@nacelle/sanity-plugin-pim-linker",
+  "version": "0.0.1",
+  "description": "Link product & collection data from Nacelle in Sanity Studio",
+  "main": "build/index.js",
+  "files": [
+    "dist",
+    "sanity.json",
+    "config.dist.json"
+  ],
+  "scripts": {
+    "lint": "eslint ./src",
+    "test": "jest test",
+    "build": "babel src -d dist --copy-files",
+    "release": "standard-version && git push --follow-tags && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker.git"
+  },
+  "keywords": [
+    "sanity",
+    "plugin",
+    "nacelle",
+    "eCommerce",
+    "e-commerce"
+  ],
+  "author": "Nacelle Inc. (getnacelle.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker/issues"
+  },
+  "homepage": "https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker#readme",
+  "dependencies": {
+    "prop-types": "^15.7.2",
+    "swr": "^0.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.3",
+    "@testing-library/react-hooks": "^5.0.0",
+    "eslint": "^7.18.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^4.3.8",
+    "jest": "^26.6.3",
+    "lint-staged": "^10.5.3",
+    "prettier": "^2.2.1",
+    "standard-version": "^9.1.0"
+  },
+  "peerDependencies": {
+    "@sanity/base": "^2.0.9",
+    "@sanity/components": "^2.0.9",
+    "@sanity/core": "^2.0.9",
+    "@sanity/react-hooks": "^2.0.9",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "lint-staged": {
+    "src/**/*.(js|ts)": [
+      "prettier --write",
+      "npm run lint"
+    ],
+    "*{json, md}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
+    }
+  }
+}
