@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react'
 
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
+import config from 'config:@nacelle/sanity-plugin-pim-linker'
 
-const fetcher = async (query, first, after) => {
-  const res = await fetch('https://hailfrequency.com/v2/graphql', {
+const fetcher = async (query, first, after, spaceId, spaceToken) => {
+  const res = await fetch('https://hailfrequency.com/v3/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-nacelle-space-id': process.env.SANITY_STUDIO_NACELLE_SPACE_ID,
-      'x-nacelle-space-token': process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN,
+      'x-nacelle-space-id': spaceId,
+      'x-nacelle-space-token': spaceToken,
     },
     body: JSON.stringify({
       query,
@@ -26,16 +27,23 @@ export const useHailFrequency = ({
   first = 2000,
   after,
 }) => {
-  const res = useSWR([query, first, after], fetcher)
-  const [data, setData] = useState([])
+  const spaceId =
+    config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID
+  const spaceToken =
+    config.nacelleSpaceToken || process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN
+  const { data, error } = useSWR(
+    [query, first, after, spaceId, spaceToken],
+    fetcher
+  )
+  const [nacelleData, setNacelleData] = useState([])
 
   useEffect(() => {
-    if (res.error) {
-      throw new Error(res.error)
+    if (error) {
+      throw new Error(error)
     }
 
-    setData(dataHandler(res))
-  }, [res, dataHandler])
+    setNacelleData(dataHandler(data))
+  }, [data, dataHandler, error, spaceId, spaceToken])
 
-  return data
+  return nacelleData
 }
