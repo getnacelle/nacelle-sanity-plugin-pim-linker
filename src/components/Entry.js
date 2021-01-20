@@ -9,6 +9,7 @@ const Thumb = ({ src }) => {
     <div style={{ width: '3rem', height: '3rem', background: `url(${src})` }} />
   )
 }
+
 Thumb.propTypes = {
   src: PropTypes.string,
 }
