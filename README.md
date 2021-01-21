@@ -1,6 +1,6 @@
 # Sanity Custom Input Plugin: Nacelle PIM Linker
 
-[Nacelle](https://docs.getnacelle.com/intro.html#what-is-nacelle) indexes data from your [PIM](https://en.wikipedia.org/wiki/Product_information_management) (e.g. Shopify, Magento) and CMS to power headless eCommerce projects. This plugin provides a [custom input component](https://www.sanity.io/docs/custom-input-widgets) that helps you reference product & collection data stored in Nacelle indices.
+[Nacelle](https://docs.getnacelle.com/intro.html#what-is-nacelle) indexes data from your [PIM](https://en.wikipedia.org/wiki/Product_information_management) (e.g. Shopify, Magento) and CMS to power headless eCommerce projects. This plugin provides a [custom input component](https://www.sanity.io/docs/custom-input-widgets) for Sanity Studio that helps you reference product & collection data stored in Nacelle indices.
 
 ## Installation & Setup
 
