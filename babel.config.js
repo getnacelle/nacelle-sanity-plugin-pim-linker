@@ -4,10 +4,10 @@ module.exports = {
       '@babel/preset-env',
       {
         targets: {
-          edge: '14',
-        },
-      },
+          edge: '14'
+        }
+      }
     ],
-    '@babel/preset-react',
-  ],
+    '@babel/preset-react'
+  ]
 }

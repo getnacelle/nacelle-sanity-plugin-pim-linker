@@ -15,14 +15,14 @@ import {
   Dialog,
   Tab,
   TabList,
-  Autocomplete,
+  Autocomplete
 } from '@sanity/ui'
 import NacelleDataFetcher from './NacelleDataFetcher'
 import { GET_PRODUCTS, GET_COLLECTIONS } from '../queries'
 import {
   HandleContext,
   SearchOptionsContext,
-  SearchQueryContext,
+  SearchQueryContext
 } from '../context'
 
 const createPatchFrom = (value) =>
@@ -65,7 +65,7 @@ const NacelleData = ({ dataType, active }) => {
 
 NacelleData.propTypes = {
   dataType: PropTypes.string.isRequired,
-  active: PropTypes.bool,
+  active: PropTypes.bool
 }
 
 const SearchIcon = () => (
@@ -93,7 +93,7 @@ const Interface = ({
   interfaceOpen,
   children,
   activeTab,
-  setActiveTab,
+  setActiveTab
 }) => {
   const dataTypes = Array.isArray(dataType) ? dataType.sort() : [dataType]
   const multiTab = dataTypes.length > 1
@@ -125,7 +125,7 @@ Interface.propTypes = {
   interfaceOpen: PropTypes.bool.isRequired,
   activeTab: PropTypes.number,
   setActiveTab: PropTypes.func,
-  children: PropTypes.node,
+  children: PropTypes.node
 }
 
 const NacelleLinker = ({ type, onChange }) => {
@@ -231,10 +231,10 @@ NacelleLinker.propTypes = {
   type: PropTypes.shape({
     title: PropTypes.string,
     options: PropTypes.shape({
-      dataType: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-    }),
+      dataType: PropTypes.oneOfType([PropTypes.array, PropTypes.string])
+    })
   }).isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
 }
 
 export default React.forwardRef((props, ref) => (

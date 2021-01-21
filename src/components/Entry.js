@@ -11,7 +11,7 @@ const Thumb = ({ src }) => {
 }
 
 Thumb.propTypes = {
-  src: PropTypes.string,
+  src: PropTypes.string
 }
 
 const Entry = ({ item }) => {
@@ -41,7 +41,7 @@ const Entry = ({ item }) => {
 }
 
 Entry.propTypes = {
-  item: PropTypes.object,
+  item: PropTypes.object
 }
 
 export default Entry

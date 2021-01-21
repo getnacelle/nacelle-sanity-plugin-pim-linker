@@ -4,5 +4,5 @@ export default {
   title: 'Nacelle Data',
   name: 'nacelleData',
   type: 'string',
-  inputComponent: NacelleLinker,
+  inputComponent: NacelleLinker
 }

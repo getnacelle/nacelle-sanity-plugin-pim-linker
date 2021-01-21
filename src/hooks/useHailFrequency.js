@@ -10,12 +10,12 @@ const fetcher = async (query, first, after, spaceId, spaceToken) => {
     headers: {
       'Content-Type': 'application/json',
       'x-nacelle-space-id': spaceId,
-      'x-nacelle-space-token': spaceToken,
+      'x-nacelle-space-token': spaceToken
     },
     body: JSON.stringify({
       query,
-      variables: { first, after },
-    }),
+      variables: { first, after }
+    })
   }).then((res) => res.json())
 
   return res && res.data
@@ -25,7 +25,7 @@ export const useHailFrequency = ({
   query,
   dataHandler = (data) => data,
   first = 2000,
-  after,
+  after
 }) => {
   const spaceId =
     config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID

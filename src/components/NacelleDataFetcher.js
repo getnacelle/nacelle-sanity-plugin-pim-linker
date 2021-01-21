@@ -15,7 +15,7 @@ const NacelleResults = ({ query, dataHandler, first, after, active }) => {
         data &&
           data.map((entry) => ({
             ...entry,
-            value: entry.title,
+            value: entry.title
           }))
       )
     }
@@ -29,7 +29,7 @@ NacelleResults.propTypes = {
   dataHandler: PropTypes.func.isRequired,
   first: PropTypes.number,
   after: PropTypes.string,
-  active: PropTypes.bool,
+  active: PropTypes.bool
 }
 
 export default NacelleResults

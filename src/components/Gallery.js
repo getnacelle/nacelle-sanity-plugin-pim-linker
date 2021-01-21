@@ -12,7 +12,7 @@ const Gallery = ({ data, active }) => {
         maxHeight: '16rem',
         border: '1px solid #ddd',
         marginRight: '4px',
-        display: !active ? 'none' : null,
+        display: !active ? 'none' : null
       }}
     >
       <Menu space={1} style={{ marginTop: '1rem' }}>
@@ -25,7 +25,7 @@ const Gallery = ({ data, active }) => {
 
 Gallery.propTypes = {
   data: PropTypes.array,
-  active: PropTypes.bool,
+  active: PropTypes.bool
 }
 
 export default Gallery
