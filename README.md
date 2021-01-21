@@ -14,9 +14,11 @@
 
 ### Credentials
 
-You'll need to provide the ID and Token associated with your Nacelle space, either in `./config/@nacelle/sanity-plugin-pim-linker.json` or in `.env.development` / `.env.production`. These credentials can be found in the [Nacelle Dashboard](https://dashboard.getnacelle.com/).
+You'll need to provide the ID and Token associated with your Nacelle space. These credentials can be found in the [Nacelle Dashboard](https://dashboard.getnacelle.com/).
 
-#### `./config/@nacelle/sanity-plugin-pim-linker.json`
+You can add these credentials in one of two ways:
+
+#### in `./config/@nacelle/sanity-plugin-pim-linker.json`
 
 ```json
 {
@@ -25,12 +27,11 @@ You'll need to provide the ID and Token associated with your Nacelle space, eith
 }
 ```
 
-#### `.env.development` / `.env.production`
+#### in `.env.development` / `.env.production`
 
 ```
 SANITY_STUDIO_NACELLE_SPACE_ID=your-nacelle-space-id
 SANITY_STUDIO_NACELLE_SPACE_TOKEN=your-nacelle-graphql-token
-
 ```
 
 ## Use in Schema Documents
