@@ -48,7 +48,7 @@ Set the `type` field to `nacelleData` to use the custom input component:
 
 ### Options
 
-By default, the custom input component allows you to choose a handle from either products or collections.
+By default, the custom input component allows you to choose a `handle` from either products or collections.
 
 Realistically, you probably want to restrict the component to _either_ products or collections. To do that, provide either `['products']` or `['collections']` to `options.dataType`:
 
