@@ -84,7 +84,7 @@ Since this custom input component just stores the `handle` of a particular produ
 
 ```js
 const product = await client.data.product({
-  handle: 'handle-from-my-sanity-entry',
+  handle: 'handle-from-my-sanity-entry'
 })
 ```
 
@@ -92,12 +92,12 @@ const product = await client.data.product({
 
 ```js
 const collection = await client.data.collection({
-  handle: 'handle-from-my-sanity-entry',
+  handle: 'handle-from-my-sanity-entry'
 })
 
 const productHandles = collection.productLists[0].handles
 
 const collectionProducts = await client.data.products({
-  handles: productHandles,
+  handles: productHandles
 })
 ```
