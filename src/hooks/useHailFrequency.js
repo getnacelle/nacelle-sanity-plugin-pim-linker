@@ -5,7 +5,7 @@ import fetch from 'isomorphic-unfetch'
 import config from 'config:@nacelle/sanity-plugin-pim-linker'
 
 const fetcher = async (query, first, after, spaceId, spaceToken) => {
-  const res = await fetch('https://hailfrequency.com/v3/graphql', {
+  const res = await fetch('https://hailfrequency.com/v2/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
