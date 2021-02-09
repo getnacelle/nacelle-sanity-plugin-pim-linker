@@ -164,6 +164,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
           header="Indexed PIM Data"
           id="dialog-example"
           onClose={onClose}
+          width={1}
           zOffset={1000}
         >
           <HandleContext.Provider value={{ handle, setHandle: selectItem }}>
