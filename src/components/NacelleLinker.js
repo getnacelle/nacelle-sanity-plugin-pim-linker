@@ -128,8 +128,7 @@ Interface.propTypes = {
   children: PropTypes.node
 }
 
-const NacelleLinker = ({ type, onChange }) => {
-  const [handle, setHandle] = useState('')
+const NacelleLinker = ({ type, onChange, value }) => {
   const [searchOptions, setSearchOptions] = useState([])
   const [searchQuery, setSearchQuery] = useState(null)
   const [activeTab, setActiveTab] = useState(0)
@@ -137,8 +136,10 @@ const NacelleLinker = ({ type, onChange }) => {
   const onClose = useCallback(() => setInerfaceOpen(false), [])
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
 
+  const handle = value || ''
+
   const selectItem = (handle) => {
-    setHandle(handle)
+    onChange(createPatchFrom(handle))
     onClose()
   }
 
@@ -161,13 +162,7 @@ const NacelleLinker = ({ type, onChange }) => {
         </Heading>
         <Box>
           <Inline space={[4]} style={{ marginTop: '1em' }}>
-            <TextInput
-              value={handle}
-              onChange={(event) =>
-                onChange(createPatchFrom(event.target.value))
-              }
-              disabled
-            />
+            <TextInput value={handle} disabled />
             <Button
               fontSize={[2, 2, 3]}
               mode="ghost"
@@ -234,7 +229,8 @@ NacelleLinker.propTypes = {
       dataType: PropTypes.oneOfType([PropTypes.array, PropTypes.string])
     })
   }).isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string
 }
 
 export default React.forwardRef((props, ref) => (
