@@ -3,19 +3,20 @@ import PropTypes from 'prop-types'
 
 import PatchEvent, { set, unset } from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
+import { useId } from '@reach/auto-id'
 
 import {
   ThemeProvider,
   studioTheme,
-  Heading,
   Box,
   TextInput,
-  Inline,
   Button,
   Dialog,
   Tab,
   TabList,
-  Autocomplete
+  Autocomplete,
+  Stack,
+  Flex
 } from '@sanity/ui'
 import NacelleDataFetcher from './NacelleDataFetcher'
 import { GET_PRODUCTS, GET_COLLECTIONS } from '../queries'
@@ -128,8 +129,7 @@ Interface.propTypes = {
   children: PropTypes.node
 }
 
-const NacelleLinker = ({ type, onChange }) => {
-  const [handle, setHandle] = useState('')
+const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const [searchOptions, setSearchOptions] = useState([])
   const [searchQuery, setSearchQuery] = useState(null)
   const [activeTab, setActiveTab] = useState(0)
@@ -137,8 +137,12 @@ const NacelleLinker = ({ type, onChange }) => {
   const onClose = useCallback(() => setInerfaceOpen(false), [])
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
 
+  const handle = value || ''
+
+  const inputId = useId()
+
   const selectItem = (handle) => {
-    setHandle(handle)
+    onChange(createPatchFrom(handle))
     onClose()
   }
 
@@ -155,73 +159,77 @@ const NacelleLinker = ({ type, onChange }) => {
 
   return (
     <ThemeProvider theme={studioTheme}>
-      <FormField>
-        <Heading as="h2" size={1}>
-          {type.title}
-        </Heading>
-        <Box>
-          <Inline space={[4]} style={{ marginTop: '1em' }}>
-            <TextInput
-              value={handle}
-              onChange={(event) =>
-                onChange(createPatchFrom(event.target.value))
-              }
-              disabled
-            />
-            <Button
-              fontSize={[2, 2, 3]}
-              mode="ghost"
-              padding={[2, 2, 3]}
-              text={'Select'}
-              tone={interfaceOpen ? 'critical' : 'default'}
-              onClick={() => setInerfaceOpen(!interfaceOpen)}
-            />
-            {interfaceOpen && (
-              <Dialog
-                header="Indexed PIM Data"
-                id="dialog-example"
-                onClose={onClose}
-                zOffset={1000}
+      {interfaceOpen && (
+        <Dialog
+          header="Indexed PIM Data"
+          id="dialog-example"
+          onClose={onClose}
+          width={1}
+          zOffset={1000}
+        >
+          <HandleContext.Provider value={{ handle, setHandle: selectItem }}>
+            <SearchOptionsContext.Provider
+              value={{ searchOptions, setSearchOptions }}
+            >
+              <SearchQueryContext.Provider
+                value={{ searchQuery, setSearchQuery }}
               >
-                <HandleContext.Provider
-                  value={{ handle, setHandle: selectItem }}
+                <Interface
+                  dataType={dataType}
+                  interfaceOpen={interfaceOpen}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
                 >
-                  <SearchOptionsContext.Provider
-                    value={{ searchOptions, setSearchOptions }}
-                  >
-                    <SearchQueryContext.Provider
-                      value={{ searchQuery, setSearchQuery }}
-                    >
-                      <Interface
-                        dataType={dataType}
-                        interfaceOpen={interfaceOpen}
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                      >
-                        <Autocomplete
-                          fontSize={[2, 2, 3]}
-                          icon={SearchIcon}
-                          options={searchOptions}
-                          placeholder="Search indexed entries"
-                          onSelect={onQueryUpdate}
-                          onChange={onQueryUpdate}
-                          value={searchQuery || ''}
-                        />
-                        {dataType.map((type, idx) => (
-                          <NacelleData
-                            key={type}
-                            dataType={type}
-                            active={idx === activeTab}
-                          />
-                        ))}
-                      </Interface>
-                    </SearchQueryContext.Provider>
-                  </SearchOptionsContext.Provider>
-                </HandleContext.Provider>
-              </Dialog>
-            )}
-          </Inline>
-        </Box>
+                  <Autocomplete
+                    fontSize={[2, 2, 3]}
+                    icon={SearchIcon}
+                    options={searchOptions}
+                    placeholder="Search indexed entries"
+                    onSelect={onQueryUpdate}
+                    onChange={onQueryUpdate}
+                    value={searchQuery || ''}
+                  />
+                  {dataType.map((type, idx) => (
+                    <NacelleData
+                      key={type}
+                      dataType={type}
+                      active={idx === activeTab}
+                    />
+                  ))}
+                </Interface>
+              </SearchQueryContext.Provider>
+            </SearchOptionsContext.Provider>
+          </HandleContext.Provider>
+        </Dialog>
+      )}
+      <FormField
+        label={type.title}
+        markers={markers}
+        description={type.description}
+        level={level}
+      >
+        <Stack space={3}>
+          <Flex>
+            <Box flex={1}>
+              <TextInput
+                id={inputId}
+                value={handle}
+                readOnly={readOnly}
+                disabled
+              />
+            </Box>
+            <Box marginLeft={1}>
+              <Button
+                mode="ghost"
+                type="button"
+                tone={interfaceOpen ? 'critical' : 'default'}
+                disabled={readOnly}
+                onClick={() => setInerfaceOpen(!interfaceOpen)}
+                text={'Select'}
+              />
+            </Box>
+          </Flex>
+        </Stack>
       </FormField>
     </ThemeProvider>
   )
@@ -230,11 +238,16 @@ const NacelleLinker = ({ type, onChange }) => {
 NacelleLinker.propTypes = {
   type: PropTypes.shape({
     title: PropTypes.string,
+    description: PropTypes.string,
     options: PropTypes.shape({
       dataType: PropTypes.oneOfType([PropTypes.array, PropTypes.string])
     })
   }).isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  markers: PropTypes.arrayOf.any,
+  level: PropTypes.number,
+  value: PropTypes.string,
+  readOnly: PropTypes.bool
 }
 
 export default React.forwardRef((props, ref) => (
