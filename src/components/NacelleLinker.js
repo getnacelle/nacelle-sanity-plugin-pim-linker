@@ -162,14 +162,20 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
           width={1}
           zOffset={1000}
         >
-          <HandleContext.Provider value={{ handle, setHandle: (handle) => {
-            onChange(
-              PatchEvent.from([
-                setIfMissing({ _type: type.name }),
-                set(handle, ['current'])
-              ]))
-              onClose()
-          } }}>
+          <HandleContext.Provider
+            value={{
+              handle,
+              setHandle: (handle) => {
+                onChange(
+                  PatchEvent.from([
+                    setIfMissing({ _type: type.name }),
+                    set(handle, ['current'])
+                  ])
+                )
+                onClose()
+              }
+            }}
+          >
             <SearchOptionsContext.Provider
               value={{ searchOptions, setSearchOptions }}
             >
@@ -245,6 +251,7 @@ NacelleLinker.focus = function () {
 NacelleLinker.propTypes = {
   type: PropTypes.shape({
     title: PropTypes.string,
+    name: PropTypes.string,
     description: PropTypes.string,
     options: PropTypes.shape({
       dataType: PropTypes.oneOfType([PropTypes.array, PropTypes.string])
