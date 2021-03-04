@@ -3,6 +3,7 @@ import NacelleLinker from './components/NacelleLinker'
 export default {
   title: 'Nacelle Data',
   name: 'nacelleData',
-  type: 'string',
+  type: 'object',
+  fields: [{ name: 'current', type: 'string', title: 'handle' }],
   inputComponent: NacelleLinker
 }

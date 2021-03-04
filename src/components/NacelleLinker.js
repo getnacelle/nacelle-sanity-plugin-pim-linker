@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
-import PatchEvent, { set, unset } from 'part:@sanity/form-builder/patch-event'
+import PatchEvent, {
+  set,
+  setIfMissing
+} from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import { useId } from '@reach/auto-id'
 
@@ -26,8 +29,12 @@ import {
   SearchQueryContext
 } from '../context'
 
-const createPatchFrom = (value) =>
-  PatchEvent.from(value === '' ? unset() : set(value))
+const createPatchFrom = (value) => {
+  PatchEvent.from([
+    setIfMissing({ _type: 'nacelleData' }),
+    set(value, ['current'])
+  ])
+}
 
 const handleHailFrequencyData = (data, queryName) =>
   data && data[queryName] && data[queryName].items
@@ -137,7 +144,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const onClose = useCallback(() => setInerfaceOpen(false), [])
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
 
-  const handle = value || ''
+  const handle = { _type: 'nacelleData', current: value || '' }
 
   const inputId = useId()
 
@@ -213,7 +220,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
             <Box flex={1}>
               <TextInput
                 id={inputId}
-                value={handle}
+                value={handle.current}
                 readOnly={readOnly}
                 disabled
               />
@@ -235,6 +242,11 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   )
 }
 
+// Sanity a11y
+NacelleLinker.focus = function () {
+  this._inputElement.focus()
+}
+
 NacelleLinker.propTypes = {
   type: PropTypes.shape({
     title: PropTypes.string,
@@ -244,12 +256,12 @@ NacelleLinker.propTypes = {
     })
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  markers: PropTypes.arrayOf.any,
+  markers: PropTypes.arrayOf(PropTypes.any),
   level: PropTypes.number,
-  value: PropTypes.string,
+  value: PropTypes.object,
   readOnly: PropTypes.bool
 }
 
-export default React.forwardRef((props, ref) => (
-  <NacelleLinker {...props} forwardedRef={ref} />
+export default React.forwardRef((props, fwdRef) => (
+  <NacelleLinker {...props} ref={fwdRef} />
 ))
