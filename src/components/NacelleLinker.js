@@ -29,13 +29,6 @@ import {
   SearchQueryContext
 } from '../context'
 
-const createPatchFrom = (value) => {
-  PatchEvent.from([
-    setIfMissing({ _type: 'nacelleData' }),
-    set(value, ['current'])
-  ])
-}
-
 const handleHailFrequencyData = (data, queryName) =>
   data && data[queryName] && data[queryName].items
 
@@ -144,14 +137,9 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const onClose = useCallback(() => setInerfaceOpen(false), [])
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
 
-  const handle = { _type: 'nacelleData', current: value || '' }
+  const handle = value || { _type: 'nacelleData', current: '' }
 
   const inputId = useId()
-
-  const selectItem = (handle) => {
-    onChange(createPatchFrom(handle))
-    onClose()
-  }
 
   const dataTypeFromOptions = type.options && type.options.dataType
   let dataType
@@ -174,7 +162,14 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
           width={1}
           zOffset={1000}
         >
-          <HandleContext.Provider value={{ handle, setHandle: selectItem }}>
+          <HandleContext.Provider value={{ handle, setHandle: (handle) => {
+            onChange(
+              PatchEvent.from([
+                setIfMissing({ _type: type.name }),
+                set(handle, ['current'])
+              ]))
+              onClose()
+          } }}>
             <SearchOptionsContext.Provider
               value={{ searchOptions, setSearchOptions }}
             >
