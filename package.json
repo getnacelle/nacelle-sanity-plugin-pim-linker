@@ -1,6 +1,6 @@
 {
   "name": "@nacelle/sanity-plugin-pim-linker",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Link product & collection data from Nacelle in Sanity Studio",
   "main": "dist/index.js",
   "files": [
