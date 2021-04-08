@@ -29,25 +29,12 @@ import {
 const createPatchFrom = (value) =>
   PatchEvent.from(value === '' ? unset() : set(value))
 
-const handleHailFrequencyData = (data, queryName) =>
-  data && data[queryName] && data[queryName].items
-
 const NacelleData = ({ dataType, active }) => {
-  const getProducts = useCallback(
-    (data) => handleHailFrequencyData(data, 'getProducts'),
-    []
-  )
-  const getCollections = useCallback(
-    (data) => handleHailFrequencyData(data, 'getCollections'),
-    []
-  )
-
   switch (dataType) {
     case 'products':
       return (
         <NacelleDataFetcher
           query={GET_PRODUCTS}
-          dataHandler={getProducts}
           className="tabContent"
           active={active}
         />
@@ -56,7 +43,6 @@ const NacelleData = ({ dataType, active }) => {
       return (
         <NacelleDataFetcher
           query={GET_COLLECTIONS}
-          dataHandler={getCollections}
           className="tabContent"
           active={active}
         />
