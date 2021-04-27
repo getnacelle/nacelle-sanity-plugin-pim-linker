@@ -3,6 +3,9 @@
   "version": "0.0.4",
   "description": "Link product & collection data from Nacelle in Sanity Studio",
   "main": "dist/index.js",
+  "engines": {
+    "node": "14.x"
+  },
   "files": [
     "dist",
     "sanity.json",

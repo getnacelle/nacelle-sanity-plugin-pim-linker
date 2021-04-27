@@ -136,7 +136,6 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
       const skuMatch = variant.sku && variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
       return titleMatch || skuMatch
     })
-
     return titleMatch || handleMatch || tagsMatch || variantsMatch
   }
 
