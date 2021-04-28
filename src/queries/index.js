@@ -9,6 +9,11 @@ export const GET_PRODUCTS = `
         globalHandle
         title
         tags
+        productType
+        variants{
+          title
+          sku
+        }
       }
       nextToken
     }
