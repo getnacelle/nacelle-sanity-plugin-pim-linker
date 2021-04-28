@@ -1,6 +1,6 @@
 {
   "name": "@nacelle/sanity-plugin-pim-linker",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Link product & collection data from Nacelle in Sanity Studio",
   "main": "dist/index.js",
   "engines": {
@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "eslint ./src",
     "build": "babel src -d dist --copy-files",
-    "release": "npm run build && standard-version && git push --follow-tags && npm publish"
+    "release": "npm run build && standard-version && git push --follow-tags && npm publish",
+    "release-as": "npm run build && standard-version && npm publish -- --release-as"
   },
   "repository": {
     "type": "git",
