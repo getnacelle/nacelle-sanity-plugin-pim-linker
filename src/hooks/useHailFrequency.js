@@ -66,11 +66,14 @@ async function fetcher(query, spaceId, spaceToken) {
  * @param {function(Object[]):Object[]} params.dataHandler - params.dataHandler - Data handler function that can be used to transform data returned from Nacelle's indices
  * @returns {Object[]} The data stored in Nacelle's indices
  */
-export const useHailFrequency = ({ query, dataHandler = (data) => data }) => {
-  const spaceId =
+export const useHailFrequency = ({ query, options, dataHandler = (data) => data }) => {
+  let spaceId =
     config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID
-  const spaceToken =
+  let spaceToken =
     config.nacelleSpaceToken || process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN
+  if(options && options.spaceId) spaceId = options.spaceId
+  if(options && options.spaceToken) spaceToken = options.spaceToken
+
   const { data, error } = useSWR([query, spaceId, spaceToken], fetcher)
   const [nacelleData, setNacelleData] = useState([])
 

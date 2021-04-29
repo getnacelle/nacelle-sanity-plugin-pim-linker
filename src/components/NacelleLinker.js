@@ -5,6 +5,8 @@ import PatchEvent, { set, unset } from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import { useId } from '@reach/auto-id'
 
+import config from 'config:@nacelle/sanity-plugin-pim-linker'
+
 import {
   ThemeProvider,
   studioTheme,
@@ -12,6 +14,7 @@ import {
   TextInput,
   Button,
   Dialog,
+  Select,
   Tab,
   TabList,
   Autocomplete,
@@ -33,6 +36,7 @@ const NacelleData = ({ dataType, active }) => {
     case 'products':
       return (
         <NacelleDataFetcher
+          // pass in options with ids here
           query={GET_PRODUCTS}
           className="tabContent"
           active={active}
@@ -41,6 +45,7 @@ const NacelleData = ({ dataType, active }) => {
     case 'collections':
       return (
         <NacelleDataFetcher
+          // pass in options with ids here
           query={GET_COLLECTIONS}
           className="tabContent"
           active={active}
@@ -84,8 +89,11 @@ const Interface = ({
   const dataTypes = Array.isArray(dataType) ? dataType.sort() : [dataType]
   const multiTab = dataTypes.length > 1
 
+
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
+      {JSON.stringify(config)}
+
       {multiTab && (
         <TabList className="tab">
           {dataTypes.map((type, idx) => (

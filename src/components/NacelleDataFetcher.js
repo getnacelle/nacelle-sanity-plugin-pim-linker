@@ -5,8 +5,8 @@ import { useHailFrequency, useInterval } from '../hooks'
 import { SearchOptionsContext } from '../context'
 import Gallery from './Gallery'
 
-const NacelleResults = ({ query, dataHandler, first, after, active }) => {
-  const data = useHailFrequency({ query, dataHandler, first, after })
+const NacelleResults = ({ query, options, dataHandler, first, after, active }) => {
+  const data = useHailFrequency({ query, options, dataHandler, first, after })
   const { setSearchOptions } = useContext(SearchOptionsContext)
   const [ellipses, setEllipses] = useState('.')
 
