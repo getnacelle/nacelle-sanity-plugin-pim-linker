@@ -67,6 +67,7 @@ async function fetcher(query, spaceId, spaceToken) {
  * @returns {Object[]} The data stored in Nacelle's indices
  */
 export const useHailFrequency = ({ query, options, dataHandler = (data) => data }) => {
+
   let spaceId =
     config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID
   let spaceToken =
