@@ -21,7 +21,7 @@
 
 You'll need to provide the ID and Token associated with your Nacelle space. These credentials can be found in the [Nacelle Dashboard](https://dashboard.getnacelle.com/).
 
-You can add these credentials in one of two ways:
+For a single space you can add these credentials in one of two ways:
 
 #### in `./config/@nacelle/sanity-plugin-pim-linker.json`
 
@@ -37,6 +37,25 @@ You can add these credentials in one of two ways:
 ```
 SANITY_STUDIO_NACELLE_SPACE_ID=your-nacelle-space-id
 SANITY_STUDIO_NACELLE_SPACE_TOKEN=your-nacelle-graphql-token
+```
+
+For multiple spaces you can add these credentials like this:
+
+#### in `./config/@nacelle/sanity-plugin-pim-linker.json`
+
+```json
+"nacelleSpaces": [
+    {
+      "spaceName": "Space 1",
+      "spaceId": "your-nacelle-space-id",
+      "spaceToken": "your-nacelle-graphql-token"
+    },
+    {
+      "spaceName": "Space 2",
+      "spaceId": "clever-owl-jr0WwlZv7L",
+      "spaceToken": "2a74743f-7a00-4274-9cb6-2dfe15e89d47"
+    }
+  ]
 ```
 
 ## Use in Schema Documents
