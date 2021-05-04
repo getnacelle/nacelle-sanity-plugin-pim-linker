@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import PropTypes from 'prop-types'
 
 import PatchEvent, { set, unset } from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import { useId } from '@reach/auto-id'
+
+import config from 'config:@nacelle/sanity-plugin-pim-linker'
 
 import {
   ThemeProvider,
@@ -12,6 +14,7 @@ import {
   TextInput,
   Button,
   Dialog,
+  Select,
   Tab,
   TabList,
   Autocomplete,
@@ -23,17 +26,21 @@ import { GET_PRODUCTS, GET_COLLECTIONS } from '../queries'
 import {
   HandleContext,
   SearchOptionsContext,
-  SearchQueryContext
+  SearchQueryContext,
+  SpaceOptionsContext
 } from '../context'
 
 const createPatchFrom = (value) => PatchEvent.from(value === '' ? unset() : set(value))
 
 const NacelleData = ({ dataType, active }) => {
+  const { spaceOptions } = useContext(SpaceOptionsContext)
+
   switch (dataType) {
     case 'products':
       return (
         <NacelleDataFetcher
           query={GET_PRODUCTS}
+          options={spaceOptions}
           className="tabContent"
           active={active}
         />
@@ -42,6 +49,7 @@ const NacelleData = ({ dataType, active }) => {
       return (
         <NacelleDataFetcher
           query={GET_COLLECTIONS}
+          options={spaceOptions}
           className="tabContent"
           active={active}
         />
@@ -81,11 +89,38 @@ const Interface = ({
   activeTab,
   setActiveTab
 }) => {
+
+  const { spaceOptions, setSpaceOptions } = useContext(SpaceOptionsContext)
+
   const dataTypes = Array.isArray(dataType) ? dataType.sort() : [dataType]
   const multiTab = dataTypes.length > 1
 
+  const multiSelect =
+    Array.isArray(config.nacelleSpaces) &&
+    config.nacelleSpaces.length > 1 &&
+    config.nacelleSpaces.some((s) => s.spaceId && s.spaceToken && s.spaceName)
+
+  const onSelect = (e) => {
+    const activeSpace = config.nacelleSpaces.find(space => space.spaceId == e.target.value)
+    setSpaceOptions(activeSpace)
+  }
+
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
+      {multiSelect && (
+        <Select className="select" onChange={onSelect}
+          defaultValue={spaceOptions.spaceId}
+        >
+          {config.nacelleSpaces.map((space, idx) => (
+            <option
+              value={space.spaceId}
+              key={`${space.spaceId}-${idx}`}
+            >
+              {space.spaceName}
+            </option>
+          ))}
+        </Select>
+      )}
       {multiTab && (
         <TabList className="tab">
           {dataTypes.map((type, idx) => (
@@ -117,10 +152,19 @@ Interface.propTypes = {
 const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const [searchOptions, setSearchOptions] = useState([])
   const [searchQuery, setSearchQuery] = useState(null)
+  const [spaceOptions, setSpaceOptions] = useState(null)
   const [activeTab, setActiveTab] = useState(0)
-  const [interfaceOpen, setInerfaceOpen] = useState(false)
-  const onClose = useCallback(() => setInerfaceOpen(false), [])
+  const [interfaceOpen, setInterfaceOpen] = useState(false)
+  const onClose = useCallback(() => setInterfaceOpen(false), [])
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
+
+  useEffect(() => {
+    if(!spaceOptions) {
+      const initialSpace = Array.isArray(config.nacelleSpaces) &&
+        config.nacelleSpaces.find((s) => s.spaceId && s.spaceToken && s.spaceName)
+      setSpaceOptions(initialSpace)
+    }
+  }, [spaceOptions])
 
   const handle = value || ''
 
@@ -172,30 +216,34 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
               <SearchQueryContext.Provider
                 value={{ searchQuery, setSearchQuery }}
               >
-                <Interface
-                  dataType={dataType}
-                  interfaceOpen={interfaceOpen}
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
+                <SpaceOptionsContext.Provider
+                  value={{ spaceOptions, setSpaceOptions }}
                 >
-                  <Autocomplete
-                    fontSize={[2, 2, 3]}
-                    icon={SearchIcon}
-                    options={searchOptions}
-                    placeholder="Search indexed entries"
-                    onSelect={onQueryUpdate}
-                    onChange={onQueryUpdate}
-                    value={searchQuery || ''}
-                    filterOption={filterOption}
-                  />
-                  {dataType.map((type, idx) => (
-                    <NacelleData
-                      key={type}
-                      dataType={type}
-                      active={idx === activeTab}
+                  <Interface
+                    dataType={dataType}
+                    interfaceOpen={interfaceOpen}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                  >
+                    <Autocomplete
+                      fontSize={[2, 2, 3]}
+                      icon={SearchIcon}
+                      options={searchOptions}
+                      placeholder="Search indexed entries"
+                      onSelect={onQueryUpdate}
+                      onChange={onQueryUpdate}
+                      value={searchQuery || ''}
+                      filterOption={filterOption}
                     />
-                  ))}
-                </Interface>
+                    {dataType.map((type, idx) => (
+                      <NacelleData
+                        key={type}
+                        dataType={type}
+                        active={idx === activeTab}
+                      />
+                    ))}
+                  </Interface>
+                </SpaceOptionsContext.Provider>
               </SearchQueryContext.Provider>
             </SearchOptionsContext.Provider>
           </HandleContext.Provider>
@@ -223,7 +271,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
                 type="button"
                 tone={interfaceOpen ? 'critical' : 'default'}
                 disabled={readOnly}
-                onClick={() => setInerfaceOpen(!interfaceOpen)}
+                onClick={() => setInterfaceOpen(!interfaceOpen)}
                 text={'Select'}
               />
             </Box>
