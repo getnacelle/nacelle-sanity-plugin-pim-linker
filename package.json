@@ -14,6 +14,7 @@
   "scripts": {
     "lint": "eslint ./src",
     "build": "babel src -d dist --copy-files",
+    "start": "nodemon --watch src --exec 'npm run build'",
     "release": "npm run build && standard-version && git push --follow-tags && npm publish",
     "release-clean": "npm run build && standard-version"
   },
@@ -36,6 +37,7 @@
   "homepage": "https://github.com/getnacelle/nacelle-sanity-plugin-pim-linker#readme",
   "dependencies": {
     "isomorphic-unfetch": "^3.1.0",
+    "nodemon": "^2.0.15",
     "prop-types": "^15.7.2",
     "swr": "^0.4.0"
   },

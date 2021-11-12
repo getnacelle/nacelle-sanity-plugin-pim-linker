@@ -30,7 +30,8 @@ import {
   SpaceOptionsContext
 } from '../context'
 
-const createPatchFrom = (value) => PatchEvent.from(value === '' ? unset() : set(value))
+const createPatchFrom = (value) =>
+  PatchEvent.from(value === '' ? unset() : set(value))
 
 const NacelleData = ({ dataType, active }) => {
   const { spaceOptions } = useContext(SpaceOptionsContext)
@@ -89,7 +90,6 @@ const Interface = ({
   activeTab,
   setActiveTab
 }) => {
-
   const { spaceOptions, setSpaceOptions } = useContext(SpaceOptionsContext)
 
   const dataTypes = Array.isArray(dataType) ? dataType.sort() : [dataType]
@@ -101,21 +101,22 @@ const Interface = ({
     config.nacelleSpaces.some((s) => s.spaceId && s.spaceToken && s.spaceName)
 
   const onSelect = (e) => {
-    const activeSpace = config.nacelleSpaces.find(space => space.spaceId == e.target.value)
+    const activeSpace = config.nacelleSpaces.find(
+      (space) => space.spaceId == e.target.value
+    )
     setSpaceOptions(activeSpace)
   }
 
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
       {multiSelect && (
-        <Select className="select" onChange={onSelect}
+        <Select
+          className="select"
+          onChange={onSelect}
           defaultValue={spaceOptions.spaceId}
         >
           {config.nacelleSpaces.map((space, idx) => (
-            <option
-              value={space.spaceId}
-              key={`${space.spaceId}-${idx}`}
-            >
+            <option value={space.spaceId} key={`${space.spaceId}-${idx}`}>
               {space.spaceName}
             </option>
           ))}
@@ -159,9 +160,12 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
 
   useEffect(() => {
-    if(!spaceOptions) {
-      const initialSpace = Array.isArray(config.nacelleSpaces) &&
-        config.nacelleSpaces.find((s) => s.spaceId && s.spaceToken && s.spaceName)
+    if (!spaceOptions) {
+      const initialSpace =
+        Array.isArray(config.nacelleSpaces) &&
+        config.nacelleSpaces.find(
+          (s) => s.spaceId && s.spaceToken && s.spaceName
+        )
       setSpaceOptions(initialSpace)
     }
   }, [spaceOptions])
@@ -174,12 +178,18 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
     const queryText = query.toLowerCase().trim()
     const titleMatch = option.title.toLowerCase().includes(queryText)
     const handleMatch = option.handle.replace('/-/g', '').includes(queryText)
-    const tagsMatch = Array.isArray(option.tags) && option.tags.find(tag => tag.toLowerCase().includes(queryText))
-    const variantsMatch = Array.isArray(option.variants) && option.variants.find(variant => {
-      const titleMatch = variant.title.toLowerCase().includes(queryText)
-      const skuMatch = variant.sku && variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
-      return titleMatch || skuMatch
-    })
+    const tagsMatch =
+      Array.isArray(option.tags) &&
+      option.tags.find((tag) => tag.toLowerCase().includes(queryText))
+    const variantsMatch =
+      Array.isArray(option.variants) &&
+      option.variants.find((variant) => {
+        const titleMatch = variant.title.toLowerCase().includes(queryText)
+        const skuMatch =
+          variant.sku &&
+          variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
+        return titleMatch || skuMatch
+      })
     return titleMatch || handleMatch || tagsMatch || variantsMatch
   }
 
@@ -273,6 +283,14 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
                 disabled={readOnly}
                 onClick={() => setInterfaceOpen(!interfaceOpen)}
                 text={'Select'}
+              />
+              <Button
+                mode="ghost"
+                type="button"
+                tone={interfaceOpen ? 'critical' : 'default'}
+                disabled={readOnly}
+                onClick={() => selectItem('')}
+                text={'Clear'}
               />
             </Box>
           </Flex>
