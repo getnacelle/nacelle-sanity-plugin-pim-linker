@@ -271,8 +271,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
               <TextInput
                 id={inputId}
                 value={handle}
-                readOnly={readOnly}
-                disabled
+                onChange={(e) => selectItem(e.target.value)}
               />
             </Box>
             <Box marginLeft={1}>
