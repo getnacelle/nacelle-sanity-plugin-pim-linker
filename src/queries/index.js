@@ -1,40 +1,46 @@
 export const GET_PRODUCTS = `
-  query getProducts($first: Int, $after: String) {
-    getProducts(first: $first, after: $after) {
-      items {
-        featuredMedia {
-          thumbnailSrc
-        }
-        handle
-        globalHandle
-        title
-        tags
-        productType
-        variants{
-          title
-          sku
-        }
+query getProducts($first: Int, $after: String) {
+  products(filter: {first: $first, after: $after}) {
+  nacelleEntryId
+    content {
+      featuredMedia {
+        thumbnailSrc
       }
-      nextToken
+      handle
+      title
+    }
+      tags
+      productType
+      variants{
+        content {
+          title
+        }
+        sku
+
     }
   }
-`
+}`
 
 export const GET_COLLECTIONS = `
-  query getCollections($first: Int, $after: String) {
-    getCollections(first: $first, after: $after) {
-      nextToken
-      items {
-        featuredMedia {
-          thumbnailSrc
-        }
-        handle
-        globalHandle
-        title
-        productLists {
-          handles
-        }
-      }
+query getCollections($first: Int, $after: String) {
+	productCollections(filter: { first: $first, after: $after }) {
+		nacelleEntryId
+    content {
+      title
+      handle
     }
-  }
+		products {
+      nacelleEntryId
+			content {
+        title
+        handle
+        nacelleEntryId
+				featuredMedia {
+					id
+					thumbnailSrc
+				}
+			}
+		}
+	}
+}
 `

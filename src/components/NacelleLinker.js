@@ -35,7 +35,6 @@ const createPatchFrom = (value) =>
 
 const NacelleData = ({ dataType, active }) => {
   const { spaceOptions } = useContext(SpaceOptionsContext)
-
   switch (dataType) {
     case 'products':
       return (
@@ -44,6 +43,7 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          type="products"
         />
       )
     case 'collections':
@@ -53,6 +53,7 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          type="productCollections"
         />
       )
   }
@@ -161,11 +162,11 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
 
   useEffect(() => {
     if (!spaceOptions) {
-      const initialSpace =
-        Array.isArray(config.nacelleSpaces) &&
-        config.nacelleSpaces.find(
-          (s) => s.spaceId && s.spaceToken && s.spaceName
-        )
+      const initialSpace = Array.isArray(config.nacelleSpaces)
+        ? config.nacelleSpaces.find(
+            (s) => s.spaceId && s.spaceToken && s.spaceName
+          )
+        : {}
       setSpaceOptions(initialSpace)
     }
   }, [spaceOptions])
@@ -176,15 +177,15 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
 
   const filterOption = (query, option) => {
     const queryText = query.toLowerCase().trim()
-    const titleMatch = option.title.toLowerCase().includes(queryText)
-    const handleMatch = option.handle.replace('/-/g', '').includes(queryText)
+    const titleMatch = option.content.title.toLowerCase().includes(queryText)
+    const handleMatch = option.content.handle.replace('/-/g', '').includes(queryText)
     const tagsMatch =
       Array.isArray(option.tags) &&
       option.tags.find((tag) => tag.toLowerCase().includes(queryText))
     const variantsMatch =
       Array.isArray(option.variants) &&
       option.variants.find((variant) => {
-        const titleMatch = variant.title.toLowerCase().includes(queryText)
+        const titleMatch = variant.content.title.toLowerCase().includes(queryText)
         const skuMatch =
           variant.sku &&
           variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
@@ -308,7 +309,7 @@ NacelleLinker.propTypes = {
     })
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  markers: PropTypes.arrayOf.any,
+  markers: PropTypes.any,
   level: PropTypes.number,
   value: PropTypes.string,
   readOnly: PropTypes.bool

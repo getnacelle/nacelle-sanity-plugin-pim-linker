@@ -17,7 +17,7 @@ const Gallery = ({ data, active }) => {
     >
       <Menu space={1} style={{ marginTop: '1rem' }}>
         {data &&
-          data.map((item) => <Entry item={item} key={item.globalHandle} />)}
+          data.map((item) => <Entry item={item} key={item.nacelleEntryId} />)}
       </Menu>
     </Container>
   )

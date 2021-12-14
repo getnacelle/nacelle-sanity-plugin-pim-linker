@@ -9,9 +9,10 @@ async function fetchFromHailFrequency({
   first,
   nextToken,
   spaceId,
-  spaceToken
+  spaceToken,
+  endpoint
 }) {
-  return await fetch('https://hailfrequency.com/v2/graphql', {
+  return await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -25,38 +26,37 @@ async function fetchFromHailFrequency({
   }).then((res) => res.json())
 }
 
-async function fetcher(query, spaceId, spaceToken) {
+async function fetcher(query, spaceId, spaceToken, endpoint, type) {
   let data = []
   let nextToken = ''
-  let page = 1
-
-  while (page === 1 || nextToken) {
+  // fetch the data as long as there's more
+  // use a do_while loop since we need to fetch at least 1 time
+  do {
     const res = await fetchFromHailFrequency({
       query,
       first: 1000,
-      nextToken,
       spaceId,
-      spaceToken
+      spaceToken,
+      nextToken,
+      endpoint
     })
 
-    if (res && res.data) {
-      const queryName = Object.keys(res.data).shift() // e.g. 'getProducts'
-      const queryResults = res.data[queryName]
+    let queryResults = res?.data?.[type]
 
-      if (queryResults && queryResults.items && queryResults.items.length) {
-        data.push(...queryResults.items)
-        nextToken = queryResults.nextToken
+    if (queryResults?.length) {
+      data.push(...queryResults)
+      // since Warp2 currently doesn't have a nextToken,
+      // if we get back as many entries as we requested, set the afterto the id of the last entry
+      if (queryResults.length == 1000) {
+        nextToken = queryResults[999]?.nacelleEntryId
       } else {
         nextToken = ''
       }
-
-      page += 1
     } else {
       nextToken = ''
     }
-  }
-
-  return data
+  } while (nextToken)
+  return data ?? []
 }
 
 /**
@@ -66,16 +66,27 @@ async function fetcher(query, spaceId, spaceToken) {
  * @param {function(Object[]):Object[]} params.dataHandler - params.dataHandler - Data handler function that can be used to transform data returned from Nacelle's indices
  * @returns {Object[]} The data stored in Nacelle's indices
  */
-export const useHailFrequency = ({ query, options, dataHandler = (data) => data }) => {
-
+export const useHailFrequency = ({
+  query,
+  options,
+  type,
+  dataHandler = (data) => data
+}) => {
   let spaceId =
     config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID
   let spaceToken =
     config.nacelleSpaceToken || process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN
-  if(options && options.spaceId) spaceId = options.spaceId
-  if(options && options.spaceToken) spaceToken = options.spaceToken
+  const endpoint =
+    options?.nacelleEndpoint ??
+    config.nacelleEndpoint ??
+    process.env.SANITY_STUDIO_NACELLE_ENDPOINT
+  if (options && options.spaceId) spaceId = options.spaceId
+  if (options && options.spaceToken) spaceToken = options.spaceToken
 
-  const { data, error } = useSWR([query, spaceId, spaceToken], fetcher)
+  const { data, error } = useSWR(
+    [query, spaceId, spaceToken, endpoint, type],
+    fetcher
+  )
   const [nacelleData, setNacelleData] = useState([])
 
   useEffect(() => {
