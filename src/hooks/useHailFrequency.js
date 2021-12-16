@@ -73,15 +73,17 @@ export const useHailFrequency = ({
   dataHandler = (data) => data
 }) => {
   let spaceId =
-    config.nacelleSpaceId || process.env.SANITY_STUDIO_NACELLE_SPACE_ID
+    options?.spaceToken ??
+    config.nacelleSpaceId ??
+    process.env.SANITY_STUDIO_NACELLE_SPACE_ID
   let spaceToken =
-    config.nacelleSpaceToken || process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN
+    options?.spaceToken ??
+    config.nacelleSpaceToken ??
+    process.env.SANITY_STUDIO_NACELLE_SPACE_TOKEN
   const endpoint =
-    options?.nacelleEndpoint ??
+    options?.spaceEndpoint ??
     config.nacelleEndpoint ??
     process.env.SANITY_STUDIO_NACELLE_ENDPOINT
-  if (options && options.spaceId) spaceId = options.spaceId
-  if (options && options.spaceToken) spaceToken = options.spaceToken
 
   const { data, error } = useSWR(
     [query, spaceId, spaceToken, endpoint, type],

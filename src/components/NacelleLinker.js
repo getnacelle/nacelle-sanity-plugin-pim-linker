@@ -17,6 +17,7 @@ import {
   Select,
   Tab,
   TabList,
+  TabPanel,
   Autocomplete,
   Stack,
   Flex
@@ -43,6 +44,7 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          id="products-panel"
           type="products"
         />
       )
@@ -53,6 +55,7 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          id="collections-panel"
           type="productCollections"
         />
       )
@@ -99,46 +102,52 @@ const Interface = ({
   const multiSelect =
     Array.isArray(config.nacelleSpaces) &&
     config.nacelleSpaces.length > 1 &&
-    config.nacelleSpaces.some((s) => s.spaceId && s.spaceToken && s.spaceName)
+    config.nacelleSpaces.some(
+      (s) => s.spaceEndpoint && s.spaceToken && s.spaceName
+    )
 
   const onSelect = (e) => {
     const activeSpace = config.nacelleSpaces.find(
-      (space) => space.spaceId == e.target.value
+      (space) => space.spaceEndpoint == e.target.value
     )
     setSpaceOptions(activeSpace)
   }
 
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
-      {multiSelect && (
-        <Select
-          className="select"
-          onChange={onSelect}
-          defaultValue={spaceOptions.spaceId}
-        >
-          {config.nacelleSpaces.map((space, idx) => (
-            <option value={space.spaceId} key={`${space.spaceId}-${idx}`}>
-              {space.spaceName}
-            </option>
-          ))}
-        </Select>
-      )}
-      {multiTab && (
-        <TabList className="tab">
-          {dataTypes.map((type, idx) => (
-            <Tab
-              key={type}
-              label={type}
-              aria-controls={`${type}-panel`}
-              selected={idx === activeTab}
-              className="tablinks"
-              onClick={() => setActiveTab(idx)}
-              space={2}
-            />
-          ))}
-        </TabList>
-      )}
-      {children}
+      <Stack space={4} paddingBottom={2}>
+        {multiSelect && (
+          <Select
+            className="select"
+            onChange={onSelect}
+            defaultValue={spaceOptions?.spaceId}
+          >
+            {config.nacelleSpaces.map((space, idx) => (
+              <option
+                value={space.spaceEndpoint}
+                key={`${space.spaceId}-${idx}`}
+              >
+                {space.spaceName}
+              </option>
+            ))}
+          </Select>
+        )}
+        {multiTab && (
+          <TabList className="tab">
+            {dataTypes.map((type, idx) => (
+              <Tab
+                key={type}
+                label={type}
+                selected={idx === activeTab}
+                className="tablinks"
+                onClick={() => setActiveTab(idx)}
+                space={2}
+              />
+            ))}
+          </TabList>
+        )}
+      </Stack>
+      <TabPanel>{children}</TabPanel>
     </Box>
   )
 }
@@ -178,14 +187,18 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const filterOption = (query, option) => {
     const queryText = query.toLowerCase().trim()
     const titleMatch = option.content.title.toLowerCase().includes(queryText)
-    const handleMatch = option.content.handle.replace('/-/g', '').includes(queryText)
+    const handleMatch = option.content.handle
+      .replace('/-/g', '')
+      .includes(queryText)
     const tagsMatch =
       Array.isArray(option.tags) &&
       option.tags.find((tag) => tag.toLowerCase().includes(queryText))
     const variantsMatch =
       Array.isArray(option.variants) &&
       option.variants.find((variant) => {
-        const titleMatch = variant.content.title.toLowerCase().includes(queryText)
+        const titleMatch = variant.content.title
+          .toLowerCase()
+          .includes(queryText)
         const skuMatch =
           variant.sku &&
           variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
