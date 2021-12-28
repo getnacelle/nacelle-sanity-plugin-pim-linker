@@ -23,24 +23,25 @@ query getProducts($first: Int, $after: String) {
 
 export const GET_COLLECTIONS = `
 query getCollections($first: Int, $after: String) {
-	productCollections(filter: { first: $first, after: $after }) {
-		nacelleEntryId
+  productCollections(filter: { first: $first, after: $after }) {
+    nacelleEntryId
     content {
       title
       handle
     }
-		products {
+    products {
       nacelleEntryId
-			content {
+      content {
         title
         handle
         nacelleEntryId
-				featuredMedia {
-					id
-					thumbnailSrc
-				}
-			}
-		}
-	}
+        featuredMedia {
+          id
+          thumbnailSrc
+        }
+      }
+    }
+  }
 }
+
 `
