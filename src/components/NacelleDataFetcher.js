@@ -12,7 +12,8 @@ const NacelleResults = ({
   first,
   after,
   active,
-  type
+  type,
+  searchTerm
 }) => {
   const data = useHailFrequency({
     query,
@@ -20,8 +21,10 @@ const NacelleResults = ({
     dataHandler,
     first,
     after,
-    type
+    type,
+    searchTerm
   })
+
   const { setSearchOptions } = useContext(SearchOptionsContext)
   const [ellipses, setEllipses] = useState('.')
 
@@ -57,7 +60,8 @@ NacelleResults.propTypes = {
   first: PropTypes.number,
   after: PropTypes.string,
   active: PropTypes.bool,
-  type: PropTypes.oneOf(['products', 'productCollections']).isRequired
+  type: PropTypes.oneOf(['products', 'productCollections']).isRequired,
+  searchTerm: PropTypes.string
 }
 
 export default NacelleResults

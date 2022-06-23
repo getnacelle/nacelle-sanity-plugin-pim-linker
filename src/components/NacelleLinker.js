@@ -34,7 +34,7 @@ import {
 const createPatchFrom = (value) =>
   PatchEvent.from(value === '' ? unset() : set(value))
 
-const NacelleData = ({ dataType, active }) => {
+const NacelleData = ({ dataType, active, searchTerm }) => {
   const { spaceOptions } = useContext(SpaceOptionsContext)
   switch (dataType) {
     case 'products':
@@ -46,6 +46,7 @@ const NacelleData = ({ dataType, active }) => {
           active={active}
           id="products-panel"
           type="products"
+          searchTerm={searchTerm}
         />
       )
     case 'collections':
@@ -57,6 +58,7 @@ const NacelleData = ({ dataType, active }) => {
           active={active}
           id="collections-panel"
           type="productCollections"
+          searchTerm={searchTerm}
         />
       )
   }
@@ -64,7 +66,8 @@ const NacelleData = ({ dataType, active }) => {
 
 NacelleData.propTypes = {
   dataType: PropTypes.string.isRequired,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  searchTerm: PropTypes.string
 }
 
 const SearchIcon = () => (
@@ -167,7 +170,9 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [interfaceOpen, setInterfaceOpen] = useState(false)
   const onClose = useCallback(() => setInterfaceOpen(false), [])
-  const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
+  const onQueryUpdate = useCallback((query) => {
+    setSearchQuery(query)
+  }, [])
 
   useEffect(() => {
     if (!spaceOptions) {
@@ -264,6 +269,7 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
                         key={type}
                         dataType={type}
                         active={idx === activeTab}
+                        searchTerm={searchQuery || ''}
                       />
                     ))}
                   </Interface>
