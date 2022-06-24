@@ -103,8 +103,9 @@ export const useHailFrequency = ({
     if (error) {
       throw new Error(error)
     }
-
-    setNacelleData(dataHandler(data))
+    if (data) {
+      setNacelleData(dataHandler(data))
+    }
   }, [data, dataHandler, error, spaceId, spaceToken])
 
   return nacelleData
