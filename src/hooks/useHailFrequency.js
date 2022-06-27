@@ -13,10 +13,19 @@ async function fetchFromHailFrequency({
   endpoint,
   searchTerm
 }) {
-  const searchFilter = {
-    fields: ['HANDLE', 'TITLE'],
-    term: searchTerm
-  }
+  const variables = searchTerm
+    ? {
+        first,
+        after: nextToken,
+        searchFilter: {
+          fields: ['HANDLE', 'TITLE'],
+          term: searchTerm
+        }
+      }
+    : {
+        first,
+        after: nextToken
+      }
   return await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -26,7 +35,7 @@ async function fetchFromHailFrequency({
     },
     body: JSON.stringify({
       query,
-      variables: { first, after: nextToken, searchFilter }
+      variables
     })
   }).then((res) => res.json())
 }
