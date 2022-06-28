@@ -16,8 +16,7 @@ Thumb.propTypes = {
 
 const Entry = ({ item }) => {
   const { setHandle } = useContext(HandleContext)
-  const { searchQuery, setSearchQuery } = useContext(SearchQueryContext)
-  const hidden = searchQuery ? !item.content.title.includes(searchQuery) : false
+  const { setSearchQuery } = useContext(SearchQueryContext)
 
   return (
     <MenuItem
@@ -26,13 +25,15 @@ const Entry = ({ item }) => {
         setHandle(item.content.handle)
         setSearchQuery(null)
       }}
-      style={{ display: hidden ? 'none' : null }}
     >
       <Flex>
-        {item.content.featuredMedia && <Thumb src={item.content.featuredMedia.thumbnailSrc} />}
+        {item.content.featuredMedia && (
+          <Thumb src={item.content.featuredMedia.thumbnailSrc} />
+        )}
         <Box padding={3} flex={1}>
           <Text size={2}>
-            {item.content.title} <span style={{ color: '#89a' }}>({item.content.handle})</span>
+            {item.content.title}{' '}
+            <span style={{ color: '#89a' }}>({item.content.handle})</span>
           </Text>
         </Box>
       </Flex>

@@ -1,9 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-import { useHailFrequency, useInterval } from '../hooks'
-import { SearchOptionsContext } from '../context'
+import { useHailFrequency } from '../hooks'
 import Gallery from './Gallery'
+import Loading from './Loading'
 
 const NacelleResults = ({
   query,
@@ -12,42 +12,59 @@ const NacelleResults = ({
   first,
   after,
   active,
-  type
+  type,
+  searchTerm
 }) => {
+  const [isLoading, setIsLoading] = useState(true)
+
   const data = useHailFrequency({
     query,
     options,
     dataHandler,
     first,
     after,
-    type
+    type,
+    searchTerm
   })
-  const { setSearchOptions } = useContext(SearchOptionsContext)
-  const [ellipses, setEllipses] = useState('.')
-
-  useInterval(
-    () =>
-      ellipses.length < 3 ? setEllipses(ellipses + '.') : setEllipses('.'),
-    400
-  )
 
   useEffect(() => {
-    if (active) {
-      setSearchOptions(
-        data &&
-          data.map((entry) => ({
-            ...entry,
-            value: entry.content.title
-          }))
-      )
+    if (data) {
+      setIsLoading(false)
     }
-  }, [data, active, setSearchOptions])
+  }, [data, setIsLoading])
 
-  return data ? (
-    <Gallery data={data} active={active} />
-  ) : (
-    <p>Loading{ellipses}</p>
-  )
+  const filterOption = (query, option) => {
+    const queryText = query.toLowerCase().trim()
+    const titleMatch = option.content.title.toLowerCase().includes(queryText)
+    const handleMatch = option.content.handle
+      .replace('/-/g', '')
+      .includes(queryText)
+    const tagsMatch =
+      Array.isArray(option.tags) &&
+      option.tags.find((tag) => tag.toLowerCase().includes(queryText))
+    const variantsMatch =
+      Array.isArray(option.variants) &&
+      option.variants.find((variant) => {
+        const titleMatch = variant.content.title
+          .toLowerCase()
+          .includes(queryText)
+        const skuMatch =
+          variant.sku &&
+          variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
+        return titleMatch || skuMatch
+      })
+    return titleMatch || handleMatch || tagsMatch || variantsMatch
+  }
+
+  const filteredData =
+    data &&
+    data.filter((searchOption) => filterOption(searchTerm, searchOption))
+
+  if (isLoading) {
+    return <Loading />
+  }
+
+  return <Gallery data={filteredData} active={active} />
 }
 
 NacelleResults.propTypes = {
@@ -57,7 +74,8 @@ NacelleResults.propTypes = {
   first: PropTypes.number,
   after: PropTypes.string,
   active: PropTypes.bool,
-  type: PropTypes.oneOf(['products', 'productCollections']).isRequired
+  type: PropTypes.oneOf(['products', 'productCollections']).isRequired,
+  searchTerm: PropTypes.string
 }
 
 export default NacelleResults

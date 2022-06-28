@@ -10,8 +10,22 @@ async function fetchFromHailFrequency({
   nextToken,
   spaceId,
   spaceToken,
-  endpoint
+  endpoint,
+  searchTerm
 }) {
+  const variables = searchTerm
+    ? {
+        first,
+        after: nextToken,
+        searchFilter: {
+          fields: ['HANDLE', 'TITLE'],
+          term: searchTerm
+        }
+      }
+    : {
+        first,
+        after: nextToken
+      }
   return await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -21,12 +35,12 @@ async function fetchFromHailFrequency({
     },
     body: JSON.stringify({
       query,
-      variables: { first, after: nextToken }
+      variables
     })
   }).then((res) => res.json())
 }
 
-async function fetcher(query, spaceId, spaceToken, endpoint, type) {
+async function fetcher(query, spaceId, spaceToken, endpoint, type, searchTerm) {
   let data = []
   let nextToken = ''
   // fetch the data as long as there's more
@@ -34,14 +48,16 @@ async function fetcher(query, spaceId, spaceToken, endpoint, type) {
   do {
     const res = await fetchFromHailFrequency({
       query,
-      first: 1000,
+      first: 500,
       spaceId,
       spaceToken,
       nextToken,
-      endpoint
+      endpoint,
+      searchTerm
     })
-
-    let queryResults = res?.data?.[type]
+    let queryResults = res?.data?.[
+      type.includes('product') ? 'allProducts' : 'allProductCollections'
+    ]?.edges.map((edge) => edge.node)
 
     if (queryResults?.length) {
       data.push(...queryResults)
@@ -70,6 +86,7 @@ export const useHailFrequency = ({
   query,
   options,
   type,
+  searchTerm,
   dataHandler = (data) => data
 }) => {
   let spaceId =
@@ -86,7 +103,7 @@ export const useHailFrequency = ({
     process.env.SANITY_STUDIO_NACELLE_ENDPOINT
 
   const { data, error } = useSWR(
-    [query, spaceId, spaceToken, endpoint, type],
+    [query, spaceId, spaceToken, endpoint, type, searchTerm],
     fetcher
   )
   const [nacelleData, setNacelleData] = useState([])
@@ -95,8 +112,9 @@ export const useHailFrequency = ({
     if (error) {
       throw new Error(error)
     }
-
-    setNacelleData(dataHandler(data))
+    if (data) {
+      setNacelleData(dataHandler(data))
+    }
   }, [data, dataHandler, error, spaceId, spaceToken])
 
   return nacelleData
