@@ -17,7 +17,7 @@ import {
   Select,
   Tab,
   TabList,
-  Autocomplete,
+  TabPanel,
   Stack,
   Flex
 } from '@sanity/ui'
@@ -25,7 +25,6 @@ import NacelleDataFetcher from './NacelleDataFetcher'
 import { GET_PRODUCTS, GET_COLLECTIONS } from '../queries'
 import {
   HandleContext,
-  SearchOptionsContext,
   SearchQueryContext,
   SpaceOptionsContext
 } from '../context'
@@ -33,9 +32,8 @@ import {
 const createPatchFrom = (value) =>
   PatchEvent.from(value === '' ? unset() : set(value))
 
-const NacelleData = ({ dataType, active }) => {
+const NacelleData = ({ dataType, active, searchTerm }) => {
   const { spaceOptions } = useContext(SpaceOptionsContext)
-
   switch (dataType) {
     case 'products':
       return (
@@ -44,6 +42,9 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          id="products-panel"
+          type="products"
+          searchTerm={searchTerm}
         />
       )
     case 'collections':
@@ -53,6 +54,9 @@ const NacelleData = ({ dataType, active }) => {
           options={spaceOptions}
           className="tabContent"
           active={active}
+          id="collections-panel"
+          type="productCollections"
+          searchTerm={searchTerm}
         />
       )
   }
@@ -60,7 +64,8 @@ const NacelleData = ({ dataType, active }) => {
 
 NacelleData.propTypes = {
   dataType: PropTypes.string.isRequired,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  searchTerm: PropTypes.string
 }
 
 const SearchIcon = () => (
@@ -98,46 +103,52 @@ const Interface = ({
   const multiSelect =
     Array.isArray(config.nacelleSpaces) &&
     config.nacelleSpaces.length > 1 &&
-    config.nacelleSpaces.some((s) => s.spaceId && s.spaceToken && s.spaceName)
+    config.nacelleSpaces.some(
+      (s) => s.spaceEndpoint && s.spaceToken && s.spaceName
+    )
 
   const onSelect = (e) => {
     const activeSpace = config.nacelleSpaces.find(
-      (space) => space.spaceId == e.target.value
+      (space) => space.spaceEndpoint == e.target.value
     )
     setSpaceOptions(activeSpace)
   }
 
   return (
     <Box style={{ display: interfaceOpen ? 'block' : 'none' }} padding={4}>
-      {multiSelect && (
-        <Select
-          className="select"
-          onChange={onSelect}
-          defaultValue={spaceOptions.spaceId}
-        >
-          {config.nacelleSpaces.map((space, idx) => (
-            <option value={space.spaceId} key={`${space.spaceId}-${idx}`}>
-              {space.spaceName}
-            </option>
-          ))}
-        </Select>
-      )}
-      {multiTab && (
-        <TabList className="tab">
-          {dataTypes.map((type, idx) => (
-            <Tab
-              key={type}
-              label={type}
-              aria-controls={`${type}-panel`}
-              selected={idx === activeTab}
-              className="tablinks"
-              onClick={() => setActiveTab(idx)}
-              space={2}
-            />
-          ))}
-        </TabList>
-      )}
-      {children}
+      <Stack space={4} paddingBottom={2}>
+        {multiSelect && (
+          <Select
+            className="select"
+            onChange={onSelect}
+            defaultValue={spaceOptions?.spaceId}
+          >
+            {config.nacelleSpaces.map((space, idx) => (
+              <option
+                value={space.spaceEndpoint}
+                key={`${space.spaceId}-${idx}`}
+              >
+                {space.spaceName}
+              </option>
+            ))}
+          </Select>
+        )}
+        {multiTab && (
+          <TabList className="tab">
+            {dataTypes.map((type, idx) => (
+              <Tab
+                key={type}
+                label={type}
+                selected={idx === activeTab}
+                className="tablinks"
+                onClick={() => setActiveTab(idx)}
+                space={2}
+              />
+            ))}
+          </TabList>
+        )}
+      </Stack>
+      <TabPanel>{children}</TabPanel>
     </Box>
   )
 }
@@ -151,21 +162,22 @@ Interface.propTypes = {
 }
 
 const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
-  const [searchOptions, setSearchOptions] = useState([])
   const [searchQuery, setSearchQuery] = useState(null)
   const [spaceOptions, setSpaceOptions] = useState(null)
   const [activeTab, setActiveTab] = useState(0)
   const [interfaceOpen, setInterfaceOpen] = useState(false)
   const onClose = useCallback(() => setInterfaceOpen(false), [])
-  const onQueryUpdate = useCallback((query) => setSearchQuery(query), [])
+  const onQueryUpdate = useCallback((query) => {
+    setSearchQuery(query)
+  }, [])
 
   useEffect(() => {
     if (!spaceOptions) {
-      const initialSpace =
-        Array.isArray(config.nacelleSpaces) &&
-        config.nacelleSpaces.find(
-          (s) => s.spaceId && s.spaceToken && s.spaceName
-        )
+      const initialSpace = Array.isArray(config.nacelleSpaces)
+        ? config.nacelleSpaces.find(
+            (s) => s.spaceId && s.spaceToken && s.spaceName
+          )
+        : {}
       setSpaceOptions(initialSpace)
     }
   }, [spaceOptions])
@@ -173,25 +185,6 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
   const handle = value || ''
 
   const inputId = useId()
-
-  const filterOption = (query, option) => {
-    const queryText = query.toLowerCase().trim()
-    const titleMatch = option.title.toLowerCase().includes(queryText)
-    const handleMatch = option.handle.replace('/-/g', '').includes(queryText)
-    const tagsMatch =
-      Array.isArray(option.tags) &&
-      option.tags.find((tag) => tag.toLowerCase().includes(queryText))
-    const variantsMatch =
-      Array.isArray(option.variants) &&
-      option.variants.find((variant) => {
-        const titleMatch = variant.title.toLowerCase().includes(queryText)
-        const skuMatch =
-          variant.sku &&
-          variant.sku.toLowerCase().replace('/-/g', '').includes(queryText)
-        return titleMatch || skuMatch
-      })
-    return titleMatch || handleMatch || tagsMatch || variantsMatch
-  }
 
   const selectItem = (handle) => {
     onChange(createPatchFrom(handle))
@@ -220,42 +213,38 @@ const NacelleLinker = ({ type, onChange, value, markers, level, readOnly }) => {
           zOffset={1000}
         >
           <HandleContext.Provider value={{ handle, setHandle: selectItem }}>
-            <SearchOptionsContext.Provider
-              value={{ searchOptions, setSearchOptions }}
+            <SearchQueryContext.Provider
+              value={{ searchQuery, setSearchQuery }}
             >
-              <SearchQueryContext.Provider
-                value={{ searchQuery, setSearchQuery }}
+              <SpaceOptionsContext.Provider
+                value={{ spaceOptions, setSpaceOptions }}
               >
-                <SpaceOptionsContext.Provider
-                  value={{ spaceOptions, setSpaceOptions }}
+                <Interface
+                  dataType={dataType}
+                  interfaceOpen={interfaceOpen}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
                 >
-                  <Interface
-                    dataType={dataType}
-                    interfaceOpen={interfaceOpen}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                  >
-                    <Autocomplete
-                      fontSize={[2, 2, 3]}
-                      icon={SearchIcon}
-                      options={searchOptions}
-                      placeholder="Search indexed entries"
-                      onSelect={onQueryUpdate}
-                      onChange={onQueryUpdate}
-                      value={searchQuery || ''}
-                      filterOption={filterOption}
+                  <TextInput
+                    fontSize={[2, 2, 3]}
+                    icon={SearchIcon}
+                    placeholder="Search indexed entries"
+                    onChange={(event) =>
+                      onQueryUpdate(event.currentTarget.value)
+                    }
+                    value={searchQuery || ''}
+                  />
+                  {dataType.map((type, idx) => (
+                    <NacelleData
+                      key={type}
+                      dataType={type}
+                      active={idx === activeTab}
+                      searchTerm={searchQuery || ''}
                     />
-                    {dataType.map((type, idx) => (
-                      <NacelleData
-                        key={type}
-                        dataType={type}
-                        active={idx === activeTab}
-                      />
-                    ))}
-                  </Interface>
-                </SpaceOptionsContext.Provider>
-              </SearchQueryContext.Provider>
-            </SearchOptionsContext.Provider>
+                  ))}
+                </Interface>
+              </SpaceOptionsContext.Provider>
+            </SearchQueryContext.Provider>
           </HandleContext.Provider>
         </Dialog>
       )}
@@ -308,7 +297,7 @@ NacelleLinker.propTypes = {
     })
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  markers: PropTypes.arrayOf.any,
+  markers: PropTypes.any,
   level: PropTypes.number,
   value: PropTypes.string,
   readOnly: PropTypes.bool

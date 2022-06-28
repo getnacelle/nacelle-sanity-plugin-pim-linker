@@ -1,6 +1,5 @@
 {
-  "nacelleSpaceId": "",
   "nacelleSpaceToken": "",
-  "nacelleSpaceIds": [],
-  "nacelleSpaceTokens": []
+  "nacelleSpaces": [],
+  "nacelleEndpoint": ""
 }
