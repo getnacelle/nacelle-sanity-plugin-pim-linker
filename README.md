@@ -7,6 +7,10 @@
   <img src="https://user-images.githubusercontent.com/5732000/105260780-65532a00-5b5c-11eb-9cc5-c5f8bddb89b4.gif" alt="The Nacelle PIM Linker component is used in Sanity Studio to select products stored in Nacelle's indices">
 </details>
 
+## NOTICE
+
+This package is deprecated. For up-to-date guidance on referencing commerce data from Nacelle in your CMS, please see [`docs.nacelle.com`](https://docs.nacelle.com).
+
 ## Installation & Setup
 
 ### Install Peer Dependencies
